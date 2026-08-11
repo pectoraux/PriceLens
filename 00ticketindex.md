@@ -8,7 +8,8 @@ Full ticket detail:
 - [Phase 0–1 tickets](01phase01tickets.md) — Epics A, B, C, D
 - [Phase 2–3 tickets](02phase23tickets.md) — Epics E, F, G, I
 - [Phase 4–6 tickets](03phase46tickets.md) — Epics H, J, K
-- [Audit & migration](12auditandmigration.md) — Epics L, M, N, with the migration order
+- [Epic L, M, N tickets](04phaseLMNtickets.md) — first tranche, written up with acceptance criteria
+- [Audit & migration](12auditandmigration.md) — Epics L, M, N in full, with the migration order
 
 Epics L–N extend the system beyond food. They depend on the category-profile indirection (L-01,
 L-02), which is cheap to land while the backend is still mocks and expensive afterwards — see
@@ -187,6 +188,9 @@ Detailed in [doc 12, Part 3](12auditandmigration.md#part-3--new-epics).
 | **L** | Category generalization: profiles, SKU identity, cell grain, archetype router | L-00…L-14 | [09](09categoryarchitecture.md) |
 | **M** | Price resolution ladder, spatial extrapolation, input validation | M-01…M-11 | [10](10priceresolution.md) |
 | **N** | Civic points ledger, revenue attribution, partner platform | N-01…N-14 | [11](11civicpointsandrevenue.md) |
+
+The unblocked tranche (L-00…L-05, M-01, M-07, N-02) is written up with full acceptance criteria in
+[04phaseLMNtickets.md](04phaseLMNtickets.md).
 
 ---
 
