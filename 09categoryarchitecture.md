@@ -62,11 +62,13 @@ CREATE TABLE category_profile (
   log_tolerance         NUMERIC(4,3) NOT NULL,     -- honest-disagreement width
   consensus_min_obs     INT NOT NULL,
   consensus_min_contributors INT NOT NULL,
+  consensus_min_combined_weight NUMERIC(4,2) NOT NULL,
   consensus_window_days INT NOT NULL,
   consensus_scope_type  TEXT NOT NULL,             -- may be coarser than cell_scope_type
 
   -- measurement
   portion_estimation    TEXT NOT NULL,             -- REQUIRED | OPTIONAL | FORBIDDEN
+  max_relative_error_for_mass NUMERIC(4,3),        -- NULL where portion_estimation = FORBIDDEN
   canonical_units       TEXT[] NOT NULL,
   quantity_bounds       JSONB NOT NULL,            -- plausibility, replaces MAX_PLAUSIBLE_KG
 

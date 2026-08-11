@@ -99,6 +99,13 @@
 with zero Android dependencies. Features never depend on each other. Ticket A-04 adds the
 Konsist/Lint check that fails the build on violation.
 
+**Read the `:domain` box as orchestration, not as a Gradle dependency.** `:domain` depends on no
+module at all; `:ml:*` and `:core:*` modules depend *on* it, which is how policy stays in one place
+— the rule that thresholds live only in `:domain` requires exactly that direction. Because
+`:domain` has zero dependencies of its own, no cycle is possible and no Android type can leak
+through it. The arrows below it in the diagram show the call flow the use cases orchestrate, not
+who compiles against whom.
+
 ## The inference pipeline
 
 ```

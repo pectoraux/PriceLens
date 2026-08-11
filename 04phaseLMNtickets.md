@@ -78,21 +78,39 @@ pure refactor: behaviour must be bit-identical afterwards.**
 **Acceptance criteria**
 - [ ] `ProfileThresholds(profile)` in `:domain` exposes every category-varying threshold currently
       in `Thresholds`: `logTolerance`, `consensusMinObs`, `consensusMinContributors`,
-      `consensusWindowDays`, `maxVerdictAgeDays`, `minObservationsForVerdict`, quantity bounds.
+      `consensusMinCombinedWeight`, `consensusWindowDays`, `maxVerdictAgeDays`,
+      `minObservationsForVerdict`, `verdictWellAboveThreshold`, `maxRelativeErrorForMass`, and
+      quantity bounds.
+- [ ] **Every one of those reads from the profile.** A getter returning a literal fails this
+      ticket: it makes the resolver *look* category-driven while it is not, which is worse than
+      leaving the constant where it was.
 - [ ] Genuinely global values **stay** as constants and are not moved: `TAU_LABEL`, `MARGIN_MIN`,
       `LOW_DEVICE_RECOGNITION_THRESHOLD`, the anti-rephotography thresholds, the geo-integrity
       speed limits. Moving these would be wrong — they are properties of the model and the device,
       not of the category.
-- [ ] `ConsensusPolicyTest`, `PriceVerdictPolicyTest`, `AggregationTest` and `ReputationTest` pass
-      **unchanged** — not adapted, not re-baselined. If a test needs editing, the refactor is wrong.
-- [ ] A property test asserts that for the `fungible_loose` profile, every resolver output equals
-      the old constant exactly, across the full input range.
+- [ ] **No `ProfileThresholds` parameter anywhere has a default value.** Omitting the profile must
+      be a compile error, not a silent fall back to produce thresholds. This is the criterion the
+      whole ticket exists for: once L-06 lands, a defaulted parameter means a durable is judged on
+      a ±25% agreement band and no test fails.
+- [ ] `ConsensusPolicyTest`, `PriceVerdictPolicyTest`, `AggregationTest`, `ReputationTest` and
+      `MassEstimatorTest` keep **every assertion and every expected value unchanged**. The only
+      permitted edit is passing `ProfileThresholds(CategoryProfile.FUNGIBLE_LOOSE)` explicitly at
+      the call site. A changed expected value means the refactor altered behaviour; reject it.
+- [ ] A test asserts each resolver output for `fungible_loose` against a **literal** — `0.25f`,
+      `3`, `14`, `50.0`, and so on. Asserting against `Thresholds.X` is tautological when `X` is
+      itself defined from the profile, and can never fail.
 - [ ] No call site outside `:domain` reads a threshold directly; the A-04 architecture check is
-      extended to fail the build if one does.
+      extended to fail the build if any file outside `/domain/` imports
+      `com.pricelens.domain.policy.Thresholds`, with a fixture proving the rule fires.
 - [ ] `MAX_PLAUSIBLE_KG` / `MAX_PLAUSIBLE_PIECES` are resolved from `profile.quantity_bounds`.
 
-**Notes:** ★ the ideal agent ticket — an exact oracle, no judgment required. Review it by checking
-that the existing tests were not touched. If the diff edits a test file, reject it.
+**Notes:** ★ the ideal agent ticket — an exact oracle, no judgment required.
+
+Review it by checking that no *expected value* moved and that no `ProfileThresholds` parameter is
+defaulted. An earlier version of this ticket said "reject any diff that edits a test file", which
+was the wrong shape: it makes a defaulted parameter the cheapest way to pass, and a defaulted
+parameter is precisely the failure this ticket must prevent. Updating call sites is expected;
+updating expectations is not.
 
 ---
 
