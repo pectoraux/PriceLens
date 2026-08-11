@@ -8,6 +8,8 @@ import com.pricelens.core.data.local.db.dao.TaxonomyDao
 import com.pricelens.core.data.local.db.entity.PrototypeCacheEntity
 import com.pricelens.core.data.local.db.entity.TaxonomyItemCacheEntity
 import com.pricelens.core.data.model.CatalogBundle
+import com.pricelens.domain.model.CategoryProfile
+import com.pricelens.domain.policy.ProfileThresholds
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -97,6 +99,15 @@ class TaxonomyRepository @Inject constructor(
 
     suspend fun getItemBySlug(slug: String): TaxonomyItemCacheEntity? {
         return taxonomyDao.getItemBySlug(slug)
+    }
+
+    /**
+     * Resolves the profile thresholds for a given item (L-02).
+     * For now, always returns the FUNGIBLE_LOOSE profile as the system is food-only.
+     */
+    fun getThresholdsForItem(slug: String?): ProfileThresholds {
+        // Future: Lookup profile_id from taxonomy_item_cache and fetch CategoryProfile
+        return ProfileThresholds(CategoryProfile.FUNGIBLE_LOOSE)
     }
 
     fun getIndexFile(): java.io.File {

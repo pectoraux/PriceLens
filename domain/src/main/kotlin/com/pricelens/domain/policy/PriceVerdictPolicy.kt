@@ -1,5 +1,6 @@
 package com.pricelens.domain.policy
 
+import com.pricelens.domain.model.CategoryProfile
 import com.pricelens.domain.model.Money
 
 enum class PriceVerdict {
@@ -21,11 +22,12 @@ object PriceVerdictPolicy {
         p50: Money,
         p90: Money,
         nObservations: Int,
-        freshnessDays: Int
+        freshnessDays: Int,
+        thresholds: ProfileThresholds = ProfileThresholds(CategoryProfile.FUNGIBLE_LOOSE)
     ): PriceVerdict {
         // 1. Maturity Gate (G-10)
-        if (nObservations < Thresholds.MIN_OBSERVATIONS_FOR_VERDICT || 
-            freshnessDays > Thresholds.MAX_FRESHNESS_DAYS_FOR_VERDICT) {
+        if (nObservations < thresholds.minObservationsForVerdict || 
+            freshnessDays > thresholds.maxVerdictAgeDays) {
             return PriceVerdict.INSUFFICIENT_DATA
         }
 
@@ -36,7 +38,7 @@ object PriceVerdictPolicy {
         return when {
             price < low -> PriceVerdict.GOOD_DEAL
             price <= high -> PriceVerdict.USUAL_RANGE
-            price <= high * Thresholds.VERDICT_WELL_ABOVE_THRESHOLD -> PriceVerdict.ABOVE_USUAL
+            price <= high * thresholds.verdictWellAboveThreshold -> PriceVerdict.ABOVE_USUAL
             else -> PriceVerdict.WELL_ABOVE
         }
     }

@@ -1,5 +1,7 @@
 package com.pricelens.ml.portion
 
+import com.pricelens.domain.model.CategoryProfile
+import com.pricelens.domain.policy.ProfileThresholds
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.pow
@@ -23,6 +25,7 @@ class MassEstimator @Inject constructor() {
         densityKgL: Float,
         distanceMm: Float,
         distanceUncertaintyMm: Float,
+        thresholds: ProfileThresholds = ProfileThresholds(CategoryProfile.FUNGIBLE_LOOSE),
         shapeUncertainty: Float = 0.1f, // Typical variance in morphology
         densityUncertainty: Float = 0.05f // From food refs
     ): MassResult {
@@ -45,8 +48,8 @@ class MassEstimator @Inject constructor() {
         return MassResult(
             massGrams = massGrams,
             uncertaintyPercent = sigmaMassRel * 100f,
-            // Hard Rule (G-04): relative error > 25% -> not confident
-            isConfident = sigmaMassRel <= 0.25f
+            // Hard Rule (G-04): relative error > thresholds.maxRelativeErrorForMass -> not confident
+            isConfident = sigmaMassRel <= thresholds.maxRelativeErrorForMass
         )
     }
 }

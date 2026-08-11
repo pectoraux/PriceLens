@@ -9,7 +9,7 @@ import com.pricelens.core.data.local.db.entity.TaxonomyItemCacheEntity
 import com.pricelens.core.data.repository.ObservationRepository
 import com.pricelens.core.data.repository.TaxonomyRepository
 import com.pricelens.feature.review.navigation.ReviewRoute
-import com.pricelens.domain.policy.Thresholds
+import com.pricelens.domain.policy.PlausibilityPolicy
 import com.pricelens.core.data.repository.PriceRepository
 import com.pricelens.core.data.remote.model.PriceBand
 import com.pricelens.core.geo.GeoManager
@@ -80,13 +80,10 @@ class ReviewViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    val isPlausible: StateFlow<Boolean> = combine(_quantity, _unit) { q, u ->
+    val isPlausible: StateFlow<Boolean> = combine(_quantity, _unit, _itemSlug) { q, u, slug ->
         val amount = q.toDoubleOrNull() ?: 0.0
-        when (u.lowercase()) {
-            "kg", "l" -> amount <= Thresholds.MAX_PLAUSIBLE_KG
-            "piece" -> amount <= Thresholds.MAX_PLAUSIBLE_PIECES
-            else -> true
-        }
+        val thresholds = taxonomyRepository.getThresholdsForItem(slug)
+        PlausibilityPolicy.isQuantityPlausible(amount, u, thresholds)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     fun onConfirmTapped(observationId: String) {

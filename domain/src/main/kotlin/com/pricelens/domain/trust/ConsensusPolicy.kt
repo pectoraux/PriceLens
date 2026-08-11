@@ -1,6 +1,7 @@
 package com.pricelens.domain.trust
 
-import com.pricelens.domain.policy.Thresholds
+import com.pricelens.domain.model.CategoryProfile
+import com.pricelens.domain.policy.ProfileThresholds
 import com.pricelens.domain.price.PriceObservation
 import kotlin.math.abs
 import kotlin.math.ln
@@ -26,13 +27,14 @@ object ConsensusPolicy {
     fun evaluateConsensus(
         candidate: PriceObservation,
         peers: List<PriceObservation>,
-        hasStandardAttestation: Boolean
+        hasStandardAttestation: Boolean,
+        thresholds: ProfileThresholds = ProfileThresholds(CategoryProfile.FUNGIBLE_LOOSE)
     ): ConsensusResult {
-        // Filter peers by log-price agreement (within ± 25%)
+        // Filter peers by log-price agreement (within tolerance)
         val logCandidate = ln(candidate.minorUnits.toDouble())
         val agreeingPeers = peers.filter { peer ->
             val logPeer = ln(peer.minorUnits.toDouble())
-            abs(logCandidate - logPeer) <= Thresholds.CONSENSUS_PRICE_LOG_TOLERANCE
+            abs(logCandidate - logPeer) <= thresholds.logTolerance
         }
 
         val independentContributors = (agreeingPeers + candidate)
@@ -41,8 +43,8 @@ object ConsensusPolicy {
         
         val combinedWeight = (agreeingPeers + candidate).sumOf { it.weight.toDouble() }.toFloat()
 
-        val meetsConditions = independentContributors.size >= Thresholds.CONSENSUS_MIN_CONTRIBUTORS &&
-                combinedWeight >= Thresholds.CONSENSUS_MIN_COMBINED_WEIGHT &&
+        val meetsConditions = independentContributors.size >= thresholds.consensusMinContributors &&
+                combinedWeight >= thresholds.consensusMinCombinedWeight &&
                 hasStandardAttestation
 
         return ConsensusResult(

@@ -2,6 +2,7 @@ package com.pricelens.ml.portion
 
 import com.pricelens.core.data.repository.TaxonomyRepository
 import com.pricelens.core.geo.DistanceEstimator
+import com.pricelens.domain.policy.ProfileThresholds
 import com.pricelens.ml.pipeline.contract.PortionEstimator
 import com.pricelens.ml.pipeline.model.CanonicalFrame
 import com.pricelens.ml.pipeline.model.Detection
@@ -48,12 +49,14 @@ class DefaultPortionEstimator @Inject constructor(
         }
 
         // 5. Final Mass Estimation (G-04)
+        val thresholds = taxonomyRepository.getThresholdsForItem(itemSlug)
         val result = massEstimator.estimateMass(
             projectedAreaMm2 = areaMm2,
             shapeFactor = shapeFactor,
             densityKgL = density,
             distanceMm = distResult.distanceMm,
-            distanceUncertaintyMm = distResult.uncertaintyMm
+            distanceUncertaintyMm = distResult.uncertaintyMm,
+            thresholds = thresholds
         )
 
         return PortionEstimator.PortionResult(
