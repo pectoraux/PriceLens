@@ -1,5 +1,12 @@
 # 01 — Architecture
 
+> **Extension note.** This document describes the food v1.0 architecture. Three additions extend it
+> without restructuring it: the category-profile abstraction and the Stage 2.5 archetype router
+> ([doc 09](09categoryarchitecture.md)), the query-time price resolution ladder that replaces the
+> bare Stage 7 lookup ([doc 10](10priceresolution.md)), and the civic-points ledger and partner
+> platform ([doc 11](11civicpointsandrevenue.md)). New modules and services are folded into the
+> tables below and marked *(doc 09/10/11)*.
+
 ## Principles
 
 1. **Normalize before you infer.** No model ever sees a raw camera frame. Every frame passes
@@ -84,6 +91,9 @@
 | `:core:data` | Room DB, DataStore, Ktor client, WorkManager sync | Contain policy |
 | `:core:designsystem` | Compose theme, components, uncertainty visualization primitives | Depend on features |
 | `:core:common` | Result types, dispatchers, logging, test fixtures | Depend on anything |
+| `:ml:route` *(doc 09)* | Archetype posterior from cheap frame signals, before the evidence stages | Resolve identity itself |
+| `:domain:category` *(doc 09)* | Category profile resolution, unit families, per-archetype threshold lookup | Depend on Android |
+| `:core:catalog` *(doc 09)* | SKU cache, attribute schemas, proposal drafts, profile bundle verification | Contain policy |
 
 **Dependency rule, enforced in CI:** dependencies point downward only. `:domain` is pure Kotlin
 with zero Android dependencies. Features never depend on each other. Ticket A-04 adds the
@@ -189,6 +199,13 @@ Konsist/Lint check that fails the build on violation.
 The label is shown as soon as Stage 5 completes. The price band arrives after. Never make the
 user wait on the network to learn what they are looking at.
 
+Two amendments from the multi-category work: **Stage 2.5**, the archetype router, sits between
+detection and the evidence stages and selects which Stage-3 branches run (a resolved barcode
+short-circuits embedding and retrieval, freeing ~125 ms), and **Stage 6 becomes conditional** —
+portion estimation is skipped entirely for archetypes whose net content is printed on the pack.
+**Stage 7 is no longer a cell lookup** but the resolution ladder of [doc 10](10priceresolution.md),
+which returns the `basis` of its answer alongside the band. See [doc 09](09categoryarchitecture.md).
+
 ## Technology choices
 
 | Layer | Choice | Rationale |
@@ -263,6 +280,9 @@ gives direct control over the delegate chain, which Phase 1 depends on. Revisit 
 | `ingest` | Scheduled public-source connectors (see doc 04). Normalizes external price series into the same cell schema at a lower trust tier |
 | `curator` | Model-update candidate pipeline. Builds prototype deltas, runs golden-set regression, manages canary |
 | `registry` | Signed model + taxonomy + calibration artifact distribution to clients |
+| `resolver` *(doc 10)* | Query-time price resolution ladder: local → pooled → regional → SKU anchor → substitute → public. Owns `basis` and `verdict_allowed` |
+| `ledger` *(doc 11)* | Civic points: information-gain scoring, escrow, vesting, clawback. Append-only, rebuildable from observations |
+| `partner` *(doc 11)* | Entitlements, metering, k-anonymity and privacy budget enforcement, usage attribution log |
 
 ## Build and release configuration
 

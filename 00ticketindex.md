@@ -1,12 +1,18 @@
 # Ticket Index
 
-107 tickets across 11 epics. Sizes: **S** ≤ 2 days · **M** 3–5 days · **L** 1–2 weeks ·
-**XL** > 2 weeks (should be split before starting).
+107 tickets across 11 epics (A–K) for the food v1.0, plus 39 tickets across 3 epics (L, M, N) for
+the multi-category index and the civic-points/revenue layer. Sizes: **S** ≤ 2 days · **M** 3–5 days ·
+**L** 1–2 weeks · **XL** > 2 weeks (should be split before starting).
 
 Full ticket detail:
-- [Phase 0–1 tickets](01-phase-0-1-tickets.md) — Epics A, B, C, D
-- [Phase 2–3 tickets](02-phase-2-3-tickets.md) — Epics E, F, G, I
-- [Phase 4–6 tickets](03-phase-4-6-tickets.md) — Epics H, J, K
+- [Phase 0–1 tickets](01phase01tickets.md) — Epics A, B, C, D
+- [Phase 2–3 tickets](02phase23tickets.md) — Epics E, F, G, I
+- [Phase 4–6 tickets](03phase46tickets.md) — Epics H, J, K
+- [Audit & migration](12auditandmigration.md) — Epics L, M, N, with the migration order
+
+Epics L–N extend the system beyond food. They depend on the category-profile indirection (L-01,
+L-02), which is cheap to land while the backend is still mocks and expensive afterwards — see
+[doc 12](12auditandmigration.md) for why L-00…L-02 and N-01 should start immediately.
 
 ---
 
@@ -171,6 +177,16 @@ Full ticket detail:
 | K-06 | Play Store release + staged rollout | M | K-03, K-05 |
 | K-07 | Observability dashboards + alerting | M | B-08, H-07 |
 | K-08 | On-call runbooks + transparency report | M | K-07 |
+
+## EPICS L, M, N — Multi-category, price resolution, civic points
+
+Detailed in [doc 12, Part 3](12auditandmigration.md#part-3--new-epics).
+
+| Epic | Theme | Tickets | Design doc |
+|---|---|---|---|
+| **L** | Category generalization: profiles, SKU identity, cell grain, archetype router | L-00…L-14 | [09](09categoryarchitecture.md) |
+| **M** | Price resolution ladder, spatial extrapolation, input validation | M-01…M-11 | [10](10priceresolution.md) |
+| **N** | Civic points ledger, revenue attribution, partner platform | N-01…N-14 | [11](11civicpointsandrevenue.md) |
 
 ---
 

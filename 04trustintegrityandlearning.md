@@ -17,11 +17,22 @@
 | T6 | Replay/forgery | Submit synthetic or re-photographed evidence | Screen re-photography, generated images, replayed payloads |
 | T7 | Geo-spoofer | Attribute observations to a locality they are not in | Mock location providers, VPN, rooted device |
 | T8 | Scraper | Bulk-extract the price database | API abuse |
+| T9 | **Yield farmer** | Maximize reward income, indifferent to what the price says | Volume, multiple accounts, possibly organized low-wage collection |
+| T10 | **Re-identifier** | Reconstruct individual observations from aggregate API responses | A paid partner key and many overlapping fine-grained queries |
 
 **T4 is the one that matters.** T1–T3 and T6–T7 are solvable with attestation and provenance.
 A ring of real people with real phones standing in a real market and lying in unison cannot be
 detected by any device signal — it can only be caught statistically, and that is why the
 consensus layer matters more than the crypto layer.
+
+**T9 and T10 arrive with the civic-points and partner-revenue layer** ([doc 11](11civicpointsandrevenue.md))
+and are the reason that layer cannot ship before Phase 4's gates pass. T9 is the more dangerous of
+the two in practice: T1–T4 are motivated by moving a specific price, a narrow interest held by few
+people, while T9 is motivated by money and is therefore *numerous*. Every naive reward scheme —
+pay per submission, pay per accepted submission, bonus for agreement — loses to T9 on day one. The
+defence is not a new detector but a different payment target: reward **information gain**, so that
+a submission which merely repeats what is already known is worth approximately nothing. T10 is
+addressed by k-anonymity and a per-partner privacy budget in the query layer, not by rate limiting.
 
 ## Defence layers
 

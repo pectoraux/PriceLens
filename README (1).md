@@ -55,36 +55,50 @@ Read in this order. The docs define *what is true*; the tickets define *what to 
 
 | Doc | Contents |
 |---|---|
-| [00 — Product brief](docs/00-product-brief.md) | Users, jobs-to-be-done, scope, success metrics, risks |
-| [01 — Architecture](docs/01-architecture.md) | Module graph, data flow, tech choices and why |
-| [02 — Device profiling & calibration](docs/02-device-profiling-and-calibration.md) | The phone-fingerprinting and canonical-camera-space design |
-| [03 — Recognition & price ML](docs/03-recognition-and-price-ml.md) | Detection, embedding, retrieval, fusion, portion, price model |
-| [04 — Trust, integrity & learning](docs/04-trust-integrity-and-learning.md) | Anti-tamper, consensus, reputation, poisoning-resistant learning |
-| [05 — Data model & API](docs/05-data-model-and-api.md) | Schemas, OpenAPI contract, sync protocol |
-| [06 — Eval & MLOps](docs/06-eval-and-mlops.md) | Golden sets, metrics, gates, shadow mode, rollout |
-| [07 — Roadmap](docs/07-roadmap.md) | Phases, milestones, dependency graph, staffing, critical path |
-| [08 — Gemini agent playbook](docs/08-gemini-agent-playbook.md) | How to actually drive the agent so it produces this app |
+| [00 — Product brief](00productbrief.md) | Users, jobs-to-be-done, scope, success metrics, risks |
+| [01 — Architecture](01architecture.md) | Module graph, data flow, tech choices and why |
+| [02 — Device profiling & calibration](02deviceprofilingandcalibration.md) | The phone-fingerprinting and canonical-camera-space design |
+| [03 — Recognition & price ML](03recognitionandpriceml.md) | Detection, embedding, retrieval, fusion, portion, price model |
+| [04 — Trust, integrity & learning](04trustintegrityandlearning.md) | Anti-tamper, consensus, reputation, poisoning-resistant learning |
+| [05 — Data model & API](05datamodelandapi.md) | Schemas, OpenAPI contract, sync protocol |
+| [06 — Eval & MLOps](06evalandmlops.md) | Golden sets, metrics, gates, shadow mode, rollout |
+| [07 — Roadmap](07roadmap.md) | Phases, milestones, dependency graph, staffing, critical path |
+| [08 — Gemini agent playbook](08geminiagentplaybook.md) | How to actually drive the agent so it produces this app |
+
+### Beyond food — the decentralized multi-category index
+
+Docs 00–08 specify the food v1.0. These four extend it to a price index over all consumer
+categories, with a civic-points and revenue-sharing layer.
+
+| Doc | Contents |
+|---|---|
+| [09 — Multi-category architecture](09categoryarchitecture.md) | Category profiles, the five archetypes, class-vs-SKU identity, the archetype router, decentralized labelling |
+| [10 — Price resolution & extrapolation](10priceresolution.md) | The resolution ladder, the locality similarity kernel, price-input validation, anti-anchoring |
+| [11 — Civic points & data revenue](11civicpointsandrevenue.md) | Information-gain scoring, the ledger, anti-farming economics, revenue attribution, the partner platform |
+| [12 — Audit & migration](12auditandmigration.md) | What exists today, the gaps, the ordered migration, epics L/M/N |
 
 ### Tickets
 
-107 tickets across 11 epics, each with acceptance criteria and implementation notes.
+107 tickets across 11 epics (A–K), plus 39 across epics L, M and N. Each with acceptance criteria
+and implementation notes.
 
 | File | Covers |
 |---|---|
-| [Ticket index](tickets/00-ticket-index.md) | All tickets, epics, dependencies, phase assignment |
-| [Phase 0–1 tickets](tickets/01-phase-0-1-tickets.md) | Foundations, device profiling, calibration |
-| [Phase 2–3 tickets](tickets/02-phase-2-3-tickets.md) | Recognition, price core, validation UX |
-| [Phase 4–6 tickets](tickets/03-phase-4-6-tickets.md) | Trust, learning loop, scale and launch |
+| [Ticket index](00ticketindex.md) | All tickets, epics, dependencies, phase assignment |
+| [Phase 0–1 tickets](01phase01tickets.md) | Foundations, device profiling, calibration |
+| [Phase 2–3 tickets](02phase23tickets.md) | Recognition, price core, validation UX |
+| [Phase 4–6 tickets](03phase46tickets.md) | Trust, learning loop, scale and launch |
+| [Audit & migration](12auditandmigration.md) | Epics L, M, N and the order to land them in |
 
 ---
 
 ## Quick start for the build agent
 
 1. Open this repository folder in Android Studio.
-2. Read [08 — Gemini agent playbook](docs/08-gemini-agent-playbook.md) first. It contains the
+2. Read [08 — Gemini agent playbook](08geminiagentplaybook.md) first. It contains the
    context-priming prompt, the per-ticket prompt template, and the guardrails that keep the
    agent from inventing architecture mid-sprint.
-3. Work tickets in dependency order from the [ticket index](tickets/00-ticket-index.md).
+3. Work tickets in dependency order from the [ticket index](00ticketindex.md).
    Do not skip Phase 1 — every downstream model quality number in this pack assumes frames have
    already been normalized by the device profile.
 4. Every ticket has acceptance criteria. A ticket is done when its criteria have automated

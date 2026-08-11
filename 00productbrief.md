@@ -1,5 +1,13 @@
 # 00 — Product Brief
 
+> **Scope note.** This brief describes the food v1.0. The product has since been extended in three
+> directions: a price index across **all consumer categories** (FMCG, electronics, appliances,
+> construction materials — [doc 09](09categoryarchitecture.md)), an explicit **price resolution and
+> extrapolation** procedure ([doc 10](10priceresolution.md)), and **civic points with data revenue
+> sharing** ([doc 11](11civicpointsandrevenue.md)). Where this brief says "food", read "the first
+> category". Two anti-features below are amended by doc 11 and marked inline. The audit of what
+> that expansion costs is [doc 12](12auditandmigration.md).
+
 ## The problem
 
 In informal and semi-formal markets, food prices are not posted. The buyer has no reference
@@ -28,7 +36,11 @@ often in poor light, often on a mid-range or older device. Will not tolerate a 1
 or a signup wall. May be offline.
 
 **Contributor.** A shopper who cares enough to correct the app. Motivated by usefulness and
-local pride, not points. Needs corrections to feel like they landed and mattered.
+local pride — and, from [doc 11](11civicpointsandrevenue.md), by a share of the revenue their data
+earns. Needs corrections to feel like they landed and mattered. *(Amended: the original brief said
+"not points". Civic points now exist, but they are private to their owner, weight nothing in the
+data, and reward information rather than volume — the anti-farming reasoning is unchanged, see doc
+11.)*
 
 **Analyst / partner (secondary, Phase 6).** NGOs, consumer-protection bodies, journalists, and
 researchers who want the aggregate locality price series. Consumes the API, not the app.
@@ -72,7 +84,10 @@ researchers who want the aggregate locality price series. Consumes the API, not 
 
 - **No point-estimate prices.** Always a band. A single number implies precision we do not have.
 - **No gamified leaderboard.** Leaderboards are a Sybil-farming incentive, directly at odds with
-  data integrity. Contribution feedback is private and qualitative.
+  data integrity. Contribution feedback is private. *(Still binding under
+  [doc 11](11civicpointsandrevenue.md): civic points are visible only to their owner, there is no
+  ranking of any kind, and the only collective surface is locality **coverage** — what this market
+  still needs — which motivates without creating a farming target.)*
 - **No gallery uploads in the trusted tier.** Photos not produced by the app's own camera
   pipeline can be submitted but are marked untrusted and carry zero consensus weight.
 - **No precise location storage.** Coarse locality (geohash-6, ~1.2 km) is the finest granularity
@@ -121,7 +136,7 @@ in the trailing 30 days, from ≥ 8 distinct contributors.
 |---|---|---|
 | **Cold start.** No price data → no value → no contributors → no price data. | Fatal | Seed from public sources (Ticket F-01/F-02) before any locality launches. Launch locality-by-locality, never globally. Gate a locality's price display on the maturity threshold; before that, show "learning this area" and collect only. |
 | **Device variance breaks recognition.** Model trained on clean data collapses on a cheap wide-angle sensor in fluorescent light. | High | The entire Phase 1 canonical-camera-space work. Cross-device spread is a tracked release gate, not a nice-to-have. |
-| **Data poisoning.** Sellers with an interest in inflating recorded prices, or pranksters. | High | Layered: attestation → provenance → geo-integrity → reputation-weighted robust aggregation → consensus confirmation → curation gate before any model update. Detailed in [doc 04](04-trust-integrity-and-learning.md). |
+| **Data poisoning.** Sellers with an interest in inflating recorded prices, or pranksters. | High | Layered: attestation → provenance → geo-integrity → reputation-weighted robust aggregation → consensus confirmation → curation gate before any model update. Detailed in [doc 04](04trustintegrityandlearning.md). |
 | **Genuine price shifts look like attacks.** Inflation or seasonality rejected as outliers. | Medium | Change-point detection and a separate "regime shift" path that widens the prior instead of rejecting the observations. Explicitly tested. |
 | **Confidently wrong price causes real financial harm.** | High | Abstention-first policy, band not point, prominent uncertainty display, and a hard rule that unconfirmed single observations never drive a displayed band. |
 | **Portion/weight estimation is unreliable, so per-kg prices are wrong.** | Medium | Require an explicit unit choice from the user when the visual scale estimate has low confidence. Never silently guess weight. |
