@@ -32,49 +32,18 @@ Three rules govern all agent work here:
 
 ## `GEMINI.md` — repository standing context
 
-Create this file at the root of the Android project:
+**The live file is [`GEMINI.md`](GEMINI.md) at the repository root.** It is not duplicated here —
+an inline copy drifts from the real one within a month, and a stale standing-context file is worse
+than none, because the agent trusts it completely.
 
-````markdown
-# PriceLens — agent standing instructions
+Read it before writing any ticket prompt. Keep it short: it is loaded on every session, so every
+line competes for the agent's attention with the ticket itself. Update it when an invariant
+changes, not when a detail does.
 
-## What this app is
-A food price predictor. Camera → recognize the food → estimate a fair local price band →
-user validates both → the correction feeds a locality price database. Full specification in
-`docs/`. Read the spec doc named in the ticket before writing code.
-
-## Architecture rules — never violate these
-- Module dependencies point downward only. `:domain` is pure Kotlin: no Android, no Room,
-  no Retrofit imports. Features never depend on other features.
-- No model ever receives a raw camera frame. Every frame goes through
-  `DeviceProfileNormalizer` first. If you are writing inference code that takes an `Image`
-  or `Bitmap` directly from CameraX, you are doing it wrong.
-- Never a mean over prices. Weighted median with MAD outlier rejection. Always.
-- Prices are `Long` minor units plus an ISO-4217 code. Never `Double`, never `Float`.
-- Every predictor returns a calibrated confidence. Abstention is a valid, expected output
-  and the UI has a designed state for it.
-- Confidence thresholds and abstention rules live in `:domain` only. Never inline a
-  threshold in a feature module or an ML module.
-- User corrections are never written directly to a model, index, or published price. They
-  become `ObservationDraft` records and nothing more.
-
-## Stack
-Kotlin 2.x, JDK 17, Compose + Material 3, CameraX with Camera2 interop, LiteRT, Hilt, Room,
-DataStore Proto, WorkManager, Ktor client, kotlinx.serialization, Turbine + MockK + Robolectric.
-
-## Conventions
-- Public APIs are documented with KDoc explaining *why*, not what.
-- No `!!`. Use `Result<T>` from `:core:common` for fallible operations.
-- All suspend functions take a `CoroutineDispatcher` parameter injected from
-  `:core:common.Dispatchers` — never hardcode `Dispatchers.IO`.
-- Compose: stateless composables plus a `@Preview` per state, including error and abstain.
-- Test naming: `` `method should behaviour when condition` ``.
-- Camera and ML code must have a fake/test-double implementation behind the same interface.
-
-## What to do when unsure
-Stop and ask. Do not invent an architecture, a threshold, a model choice, or a schema field.
-Do not add a dependency that the ticket does not name. If the ticket seems to require a
-decision that is not in the spec, say so instead of choosing.
-````
+**Backend caveat.** `GEMINI.md` is Android-shaped, and epics L, M and N are substantially backend
+work (Alembic, FastAPI, Celery, the ledger). Either add an equivalent standing-context file next to
+`backend/`, or state the backend rules explicitly in each backend ticket prompt. Do not assume the
+Android rules transfer — several of them do not.
 
 ## Per-ticket prompt template
 
@@ -194,6 +163,29 @@ in the system. These need someone who can look at a validation curve and know it
 **Never delegate:** the choice of what the acceptance criteria *are*, the abstention thresholds,
 and the decision to promote a model. Those are product judgments with real consequences for
 users acting on a price.
+
+### Epics L, M, N — the same four tiers
+
+The multi-category and civic-points work ([doc 12](12auditandmigration.md)) splits along one clean
+line: **agents build mechanisms, humans supply numbers.** Every value in a `category_profile` row
+is a product judgment; the resolver that reads it is boilerplate.
+
+| Tier | Tickets |
+|---|---|
+| **Excellent** | L-00, L-01, L-02, L-03, L-04, L-05, M-01, M-07, N-02, N-13 |
+| **Good, tight review** | L-06, L-07, L-09, L-10, L-11, M-02, M-05, N-03, N-04, N-10 |
+| **Poor — human leads** | M-03, M-04, M-09, M-10, M-11, L-13, N-05, N-07, N-11 |
+| **Never delegate** | N-01 (data licence), N-12 (payout rails, KYC), `CONTRIBUTOR_SHARE` and the pool split, every `category_profile` value, the decision to turn payouts on |
+
+**L-02 is the ideal agent ticket** and a good one to start on: a pure refactor with an exact
+oracle — `ConsensusPolicyTest`, `PriceVerdictPolicyTest` and `AggregationTest` must pass
+**unchanged**, because behaviour is required to be bit-identical afterwards. An agent cannot fake
+that, and you can review it in minutes.
+
+The M-tier statistical work (kernels, length-scale fitting, calibration feedback, the anchoring
+monitor) is doc 08's "poor" category almost by definition: it needs someone who can look at a
+validation curve and know it is lying. Have the agent write the harness and the plots; read them
+yourself.
 
 ## Session hygiene
 
