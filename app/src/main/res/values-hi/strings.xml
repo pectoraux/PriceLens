@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">PriceLens</string>
+    <string name="capture_screen_title">खाद्य सामग्री कैप्चर करें</string>
+    <string name="review_screen_title">पूर्वानुमान की समीक्षा करें</string>
+    <string name="contribute_screen_title">कीमत का योगदान करें</string>
+    <string name="explore_screen_title">कीमतें एक्सप्लोर करें</string>
+    <string name="settings_screen_title">सेटिंग्स</string>
+
+    <string name="camera_permission_denied">इस सुविधा का उपयोग करने के लिए कैमरा अनुमति आवश्यक है।</string>
+    <string name="grant_permission">अनुमति दें</string>
+
+    <string name="item_recognized">पहचाना गया आइटम</string>
+    <string name="price_estimate">अनुमानित कीमत</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="incorrect">गलत</string>
+
+    <string name="high_confidence">उच्च आत्मविश्वास</string>
+    <string name="medium_confidence">औसत आत्मविश्वास</string>
+    <string name="low_confidence">कम आत्मविश्वास</string>
+</resources>

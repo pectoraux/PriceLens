@@ -1,0 +1,367 @@
+openapi: 3.1.0
+info:
+  title: PriceLens API
+  description: |
+    API for locality-scoped food price estimation and contribution.
+    All money fields are in minor units (e.g., cents) as integers.
+  version: 1.0.0
+
+servers:
+  - url: https://api.pricelens.app/v1
+    description: Production server
+
+paths:
+  /price/estimate:
+    post:
+      summary: Get price band for an item
+      operationId: estimatePrice
+      tags: [Price]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PriceEstimateRequest'
+      responses:
+        '200':
+          description: Price band estimate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceBand'
+
+  /price/cells:
+    get:
+      summary: Bulk fetch price cells for offline cache
+      operationId: getPriceCells
+      tags: [Price]
+      parameters:
+        - name: geohash6
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: itemSlugs
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of price cells
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PriceCell'
+
+  /capture/nonce:
+    post:
+      summary: Get a single-use nonce for capture sealing
+      operationId: getNonce
+      tags: [Capture]
+      responses:
+        '200':
+          description: New nonce
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nonce:
+                    type: string
+                  expiresAt:
+                    type: string
+                    format: date-time
+
+  /observations:
+    post:
+      summary: Submit a new price observation
+      operationId: submitObservation
+      tags: [Capture]
+      parameters:
+        - name: X-Integrity-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationSubmission'
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  observationId:
+                    type: string
+                    format: uuid
+                  evidenceUploadUrl:
+                    type: string
+                  status:
+                    type: string
+        '409':
+          description: Nonce replayed
+        '422':
+          description: Integrity failure
+
+  /catalog/manifest:
+    get:
+      summary: Get latest catalog and bundle manifest
+      operationId: getCatalogManifest
+      tags: [Sync]
+      parameters:
+        - name: locale
+          in: query
+          schema:
+            type: string
+        - name: geohash6
+          in: query
+          schema:
+            type: string
+        - name: since
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogManifest'
+
+  /models/manifest:
+    get:
+      summary: Get model manifest for a device
+      operationId: getModelManifest
+      tags: [Sync]
+      parameters:
+        - name: deviceClassId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: abi
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Model manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelManifest'
+
+components:
+  schemas:
+    PriceEstimateRequest:
+      type: object
+      required: [itemSlug, unit, quantity, geohash6, currencyCode]
+      properties:
+        itemSlug:
+          type: string
+        unit:
+          type: string
+        quantity:
+          type: number
+        geohash6:
+          type: string
+        currencyCode:
+          type: string
+        observedAt:
+          type: string
+          format: date-time
+
+    PriceBand:
+      type: object
+      required: [p10Minor, p50Minor, p90Minor, currencyCode, unit, nObservations, nContributors, confidence]
+      properties:
+        p10Minor:
+          type: integer
+          format: int64
+        p50Minor:
+          type: integer
+          format: int64
+        p90Minor:
+          type: integer
+          format: int64
+        currencyCode:
+          type: string
+        unit:
+          type: string
+        nObservations:
+          type: integer
+        nContributors:
+          type: integer
+        freshnessDays:
+          type: integer
+        confidence:
+          type: string
+          enum: [HIGH, MEDIUM, LOW, INSUFFICIENT]
+        sourceMix:
+          type: object
+          additionalProperties:
+            type: number
+
+    PriceCell:
+      type: object
+      required: [localityId, itemId, unit, weekStart, p10Minor, p50Minor, p90Minor, currencyCode]
+      properties:
+        localityId:
+          type: integer
+          format: int64
+        itemId:
+          type: integer
+          format: int64
+        unit:
+          type: string
+        weekStart:
+          type: string
+          format: date
+        p10Minor:
+          type: integer
+          format: int64
+        p50Minor:
+          type: integer
+          format: int64
+        p90Minor:
+          type: integer
+          format: int64
+        currencyCode:
+          type: string
+
+    ObservationSubmission:
+      type: object
+      required: [clientId, nonce, itemSlug, priceMinor, currencyCode, quantity, unit, geohash6, captureSeal, deviceClassId, modelVersions]
+      properties:
+        clientId:
+          type: string
+          format: uuid
+        nonce:
+          type: string
+        itemSlug:
+          type: string
+        priceMinor:
+          type: integer
+          format: int64
+        currencyCode:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+        geohash6:
+          type: string
+        geoConfidence:
+          type: number
+        captureSeal:
+          type: string
+        attestationChain:
+          type: array
+          items:
+            type: string
+        deviceClassId:
+          type: string
+        modelVersions:
+          type: object
+        predictedItemSlug:
+          type: string
+        predictedConfidence:
+          type: number
+        predictedP50Minor:
+          type: integer
+          format: int64
+        labelWasCorrected:
+          type: boolean
+        priceWasCorrected:
+          type: boolean
+        abstained:
+          type: boolean
+        evidenceUploadRequested:
+          type: boolean
+
+    CatalogManifest:
+      type: object
+      required: [taxonomyVersion, prototypeIndexVersion, bundles]
+      properties:
+        taxonomyVersion:
+          type: integer
+        prototypeIndexVersion:
+          type: integer
+        calibrationVersion:
+          type: integer
+        bundles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactBundle'
+
+    ArtifactBundle:
+      type: object
+      required: [kind, url, sha256, sizeBytes, signature]
+      properties:
+        kind:
+          type: string
+        url:
+          type: string
+        sha256:
+          type: string
+        sizeBytes:
+          type: integer
+          format: int64
+        signature:
+          type: string
+
+    ModelManifest:
+      type: object
+      required: [models]
+      properties:
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelDefinition'
+
+    ModelDefinition:
+      type: object
+      required: [name, version, url, sha256, signature]
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        url:
+          type: string
+        sha256:
+          type: string
+        signature:
+          type: string
+        goldenInputsUrl:
+          type: string
+        expectedOutputsUrl:
+          type: string
+        minRamMb:
+          type: integer
+        recommendedDelegate:
+          type: string

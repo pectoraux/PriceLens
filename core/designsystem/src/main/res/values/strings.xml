@@ -1,0 +1,5 @@
+<resources>
+    <string name="high_confidence">High Confidence</string>
+    <string name="medium_confidence">Medium Confidence</string>
+    <string name="low_confidence">Low Confidence</string>
+</resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="camera_permission_denied">Camera permission is required to recognize food items.</string>
+    <string name="grant_permission">Grant Permission</string>
+</resources>

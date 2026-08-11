@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">PriceLens</string>
+    <string name="capture_screen_title">Piga picha ya chakula</string>
+    <string name="review_screen_title">Kagua utabiri</string>
+    <string name="contribute_screen_title">Changia bei</string>
+    <string name="explore_screen_title">Vumbua bei</string>
+    <string name="settings_screen_title">Mipangilio</string>
+
+    <string name="camera_permission_denied">Ruhusa ya kamera inahitajika ili kutumia kipengele hiki.</string>
+    <string name="grant_permission">Toa ruhusa</string>
+
+    <string name="item_recognized">Bidhaa iliyotambuliwa</string>
+    <string name="price_estimate">Kadirio la bei</string>
+    <string name="confirm">Thibitisha</string>
+    <string name="incorrect">Si sahihi</string>
+
+    <string name="high_confidence">Imani ya juu</string>
+    <string name="medium_confidence">Imani ya wastani</string>
+    <string name="low_confidence">Imani ya chini</string>
+</resources>

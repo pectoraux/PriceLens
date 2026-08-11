@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+option java_package = "com.pricelens.core.data.model";
+option java_multiple_files = true;
+
+message DeviceProfileProto {
+  string profile_id = 1;
+  int32 schema_version = 2;
+  string device_class_id = 3;
+
+  OpticalProfileProto optical = 10;
+  PhotometricProfileProto photometric = 11;
+  NoiseProfileProto noise = 12;
+  ComputeProfileProto compute = 13;
+  SensorSuiteProto sensors = 14;
+
+  int64 built_at_epoch_ms = 20;
+  ConfidenceProto overall_confidence = 21;
+  repeated string degradations = 22;
+}
+
+message OpticalProfileProto {
+  string source = 1; // REPORTED | DERIVED
+  float f_x = 2;
+  float f_y = 3;
+  float c_x = 4;
+  float c_y = 5;
+  float s = 6;
+  repeated float distortion = 7; // k1, k2, k3, p1, p2
+  string camera_id = 8;
+  float sensor_physical_width_mm = 9;
+  float sensor_physical_height_mm = 10;
+
+  int64 min_exposure_ns = 11;
+  int64 max_exposure_ns = 12;
+  int32 min_iso = 13;
+  int32 max_iso = 14;
+  bool is_binned = 15;
+  float h_fov_deg = 16;
+}
+
+message PhotometricProfileProto {
+  ColorMatrixProto color_transform1 = 1;
+  ColorMatrixProto color_transform2 = 2;
+  ColorMatrixProto forward_matrix1 = 3;
+  ColorMatrixProto forward_matrix2 = 4;
+  ColorMatrixProto calibration_transform1 = 5;
+  ColorMatrixProto calibration_transform2 = 6;
+
+  int32 reference_illuminant1 = 10;
+  int32 reference_illuminant2 = 11;
+
+  VignettingMapProto vignetting = 12;
+}
+
+message ColorMatrixProto {
+  repeated float entries = 1; // 9 entries for 3x3
+}
+
+message VignettingMapProto {
+  repeated float coefficients = 1; // radial gains
+}
+
+message NoiseProfileProto {
+  float a = 1;
+  float b = 2;
+  float mtf50 = 3;
+}
+
+message ComputeProfileProto {
+  string selected_delegate = 1;
+}
+
+message SensorSuiteProto {
+  bool has_gyro = 1;
+  bool has_accel = 2;
+  bool has_rotation_vector = 3;
+  bool has_ambient_light = 4;
+  bool has_arcore_depth = 5;
+}
+
+enum ConfidenceProto {
+  CONFIDENCE_UNSPECIFIED = 0;
+  CONFIDENCE_LOW = 1;
+  CONFIDENCE_MEDIUM = 2;
+  CONFIDENCE_HIGH = 3;
+}

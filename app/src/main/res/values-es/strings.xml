@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">PriceLens</string>
+    <string name="capture_screen_title">Capturar comida</string>
+    <string name="review_screen_title">Revisar predicción</string>
+    <string name="contribute_screen_title">Contribuir precio</string>
+    <string name="explore_screen_title">Explorar precios</string>
+    <string name="settings_screen_title">Configuración</string>
+
+    <string name="camera_permission_denied">Se requiere permiso de cámara para usar esta función.</string>
+    <string name="grant_permission">Otorgar permiso</string>
+
+    <string name="item_recognized">Artículo reconocido</string>
+    <string name="price_estimate">Estimación de precio</string>
+    <string name="confirm">Confirmar</string>
+    <string name="incorrect">Incorrecto</string>
+
+    <string name="high_confidence">Alta confianza</string>
+    <string name="medium_confidence">Confianza media</string>
+    <string name="low_confidence">Baja confianza</string>
+</resources>

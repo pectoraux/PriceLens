@@ -1,0 +1,36 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+.gradle/
+build/
+captures/
+local.properties
+.DS_Store
+
+# Gradle
+.gradle/
+build/
+
+# Kotlin
+.kotlin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Private files
+*.jks
+*.p12
+*.key
+google-services.json
+GoogleService-Info.plist
+
+# ML Artifacts
+*.tflite
+*.pb
+retrieval/index.hnsw
+
+# Evidence
+evidence/
